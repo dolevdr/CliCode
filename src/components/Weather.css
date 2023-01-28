@@ -1,0 +1,10 @@
+.weather{
+    width: 25%;
+    height: 100%;
+    background-color: #140152;
+    position: relative;
+    left: 38%;
+    font-size: 30px;
+    font-weight: lighter;
+    border-radius:20px;
+}
