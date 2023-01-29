@@ -1,11 +1,24 @@
-.weather{
+.weather {
     width: 27%;
     height: 75%;
     background-color: #140152;
     position: relative;
     left: 38%;
     font-size: 30px;
-    font-weight: lighter;
-    border-radius:20px;
+    font-weight: "lighter";
+    border-radius: 20px;
     color: #fafafa;
+}
+
+.container {
+    height: 70vh;
+}
+
+.temp { 
+    font-size: 90px; 
+    font-weight: "normal"; 
+}
+
+.divider{
+    width: 90%;
 }
