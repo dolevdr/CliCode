@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import "./Weather.css";
 import axios from "axios";
+import LoadingSpinner from "./Loading/Loading";
 
 const Weather = (props) => {
-  let [_weather, setWeather] = useState(null);
+  let [weather, setWeather] = useState(null);
   let [city, setCity] = useState(null);
+  let [load, setLoad] = useState(true);
 
   let [precipitation, setPer] = useState(null);
 
   useEffect(()=>{
     //Get data only once
-    if (!_weather) {
+    if (!weather) {
         getLocation(props.coordinates.lat, props.coordinates.long);
     
     }
-  }, [_weather, props]);
+  }, [weather, props]);
 
   async function getLocation(lat, long) {
       const data_s = await axios.get(
@@ -22,6 +24,7 @@ const Weather = (props) => {
       );
 
       //update current weather and city name from the response
+      setLoad(false);
       setWeather(data_s.data.cur);
       setCity(data_s.data.city);
 
@@ -33,9 +36,13 @@ const Weather = (props) => {
 
   return (
     <div style={{height:window.innerHeight*0.7}}>
-      {_weather && (
+        {load &&
+        <LoadingSpinner></LoadingSpinner>
+
+        }
+      {weather && (
         <div className="weather">
-          <div style={{fontSize:'90px', fontWeight:'normal'}}>{_weather.temperature}&deg;</div>
+          <div style={{fontSize:'90px', fontWeight:'normal'}}>{weather.temperature}&deg;</div>
         {city &&
           <p  >
                 {/* Long: {props.coordinates.long} | Lat: {props.coordinates.lat}            */}
@@ -45,7 +52,7 @@ const Weather = (props) => {
           <hr style={{ width:'90%'}}/>
           <div><b>המלצת היום</b></div>
           <div>
-            {_weather.temperature > 22
+            {weather.temperature > 22
               ? "לבוש קצר"
               : precipitation > 0
               ? "מעיל"
