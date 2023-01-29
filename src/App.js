@@ -3,36 +3,35 @@ import "./App.css";
 import Weather from "./components/Weather";
 
 function App() {
-  let [lat, setLat] = useState(null);
-  let [long, setLong] = useState(null);
+  
+  let [coord, setCoord] = useState(null);
 
   const pageStyle = {
     background: "linear-gradient(to left,#140152, #22007C)",
     width: "100%",
     height: window.innerHeight,
   };
-  useEffect(() =>{
-    if(!lat || !long){
+  useEffect(() => {
+    //Set browser coordinates
+    if (!coord) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            setLat(position.coords.latitude);
-            setLong(position.coords.longitude);
+            setCoord({lat:position.coords.latitude, long:position.coords.longitude})
+            
           },
           function (error) {
             console.log(error);
           }
         );
       }
-
     }
-
-  }, [lat, long]);
+  }, [coord]);
 
   return (
     <div className="page" style={pageStyle}>
-      <p style={{fontSize:'50px', fontWeight:'lighter'}}>מה לובשים עכשיו</p>
-      {lat && long && <Weather latitude={lat} longitude={long}></Weather>}
+      <p style={{ fontSize: "50px", fontWeight: "lighter" }}>מה לובשים עכשיו</p>
+      {coord && <Weather coordinates={coord}></Weather>}
     </div>
   );
 }

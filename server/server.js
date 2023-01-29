@@ -5,7 +5,6 @@ const app = express();
 
 
 const weather = require('./routers/weather');
-const city = require('./routers/city');
 
 
 const PORT = 3001;
@@ -21,9 +20,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-//Define weather router url
+//Define weather router url to get city and weather
 app.use('/weather', weather);
-app.use('/city', city);
 
 app.listen(PORT, () => {
   console.log(`listening server at http://localhost:${PORT}`);

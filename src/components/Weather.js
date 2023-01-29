@@ -9,24 +9,26 @@ const Weather = (props) => {
   let [precipitation, setPer] = useState(null);
 
   useEffect(()=>{
-    getLocation(props.latitude, props.longitude);
-  });
+    //Get data only once
+    if (!_weather) {
+        getLocation(props.coordinates.lat, props.coordinates.long);
+    
+    }
+  }, [_weather, props]);
 
   async function getLocation(lat, long) {
-    if (lat && long && !_weather) {
       const data_s = await axios.get(
         ` http://localhost:3001/weather/${lat}/${long}`
       );
-      const city_name = await axios.get(
-        ` http://localhost:3001/city/${lat}/${long}`
-      );
-      setWeather(await data_s.data.cur);
-      setCity(await city_name.data[0]);
+
+      //update current weather and city name from the response
+      setWeather(data_s.data.cur);
+      setCity(data_s.data.city);
+
       //Sum first 24 cells in the returned precipitation array (each cell represent one hour)
-      const sliced = data_s.data.pre.slice(0, 24);
-      const p = sliced.reduce((a, b) => a + b, 0);
+      const p = data_s.data.pre.reduce((a, b) => a + b, 0);
       setPer(p);
-    }
+    
   }
 
   return (
@@ -36,7 +38,7 @@ const Weather = (props) => {
           <div style={{fontSize:'90px', fontWeight:'normal'}}>{_weather.temperature}&deg;</div>
         {city &&
           <p  >
-                {/* Long: {props.longitude} | Lat: {props.latitude}            */}
+                {/* Long: {props.coordinates.long} | Lat: {props.coordinates.lat}            */}
                 {city.city}, {city.country}
           </p>
         }
