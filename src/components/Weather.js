@@ -44,8 +44,7 @@ const Weather = (props) => {
         <div className="weather">
           <div style={{fontSize:'90px', fontWeight:'normal'}}>{weather.temperature}&deg;</div>
         {city &&
-          <p  >
-                {/* Long: {props.coordinates.long} | Lat: {props.coordinates.lat}            */}
+          <p  >{/* Long: {props.coordinates.long} | Lat: {props.coordinates.lat}            */}
                 {city.city}, {city.country}
           </p>
         }

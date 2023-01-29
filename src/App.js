@@ -7,7 +7,7 @@ function App() {
   let [coord, setCoord] = useState(null);
 
   const pageStyle = {
-    background: "linear-gradient(to left,#140152, #22007C)",
+    background: "linear-gradient(to right,#22007C,#140152)",
     width: "100%",
     height: window.innerHeight,
   };
