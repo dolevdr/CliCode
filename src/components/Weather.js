@@ -3,9 +3,19 @@ import "./Weather.css";
 import axios from "axios";
 import LoadingSpinner from "./Loading/Loading";
 
+
+//Domain of the server
 const domain = "http://localhost:3001";
 
-const Weather = (props) => {
+//Constants for the reducer types
+const FetchData = "FetchData";
+const Load = "Load";
+const Error = "Error";
+
+
+const Weather = () => {
+
+  //Reducer init
   const initialState = {
     weather: null,
     location: null,
@@ -13,25 +23,32 @@ const Weather = (props) => {
     load: true,
   };
 
+  //Define reducer action
   const reducer = (state, action) => {
     switch (action.type) {
-      case "setWeather":
-        return { ...state, weather: action.payload };
-      case "setLocation":
-        return { ...state, location: action.payload };
-      case "setPrecipitation":
-        return { ...state, precipitation: action.payload };
-      case "setLoad":
-        return { ...state, load: false };
+      case Load:
+        return { ...state, load: true };
+      case FetchData:
+        return {
+          location: action.payload.location,
+          load: false,
+          precipitation: action.payload.precipitation,
+          weather: action.payload.weather,
+        };
+      case Error:
+        return { msg: "Error in fetching" };
       default:
         return state;
     }
   };
 
-  const { coordinates } = props;
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  
+
+
+  //Display what to wear according the result
   const wearType = useMemo(() => {
     if (state.weather?.temperature > 22) return "לבוש קצר";
     else {
@@ -40,25 +57,36 @@ const Weather = (props) => {
     }
   }, [state.weather?.temperature, state.precipitation]);
 
+  
   useEffect(() => {
-    //Get data only once
-    if (!state.weather) {
-      getLocation(coordinates.lat, coordinates.long);
+    //Get browser coordinates and get data
+    if (!state.weather && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        getLocation(position.coords.latitude, position.coords.longitude);
+        
+      });
     }
-  }, [state.weather, coordinates]);
-
+   
+  }, [state.weather]);
   async function getLocation(lat, long) {
-    const data_s = await axios.get(
-      `${domain}/weather/${lat}/${long}`
-    );
+    const data_s = await axios.get(`${domain}/weather/${lat}/${long}`);
 
     //update current weather and city name from the response
-    dispatch({ type: "setWeather", payload: data_s.data.cur });
-    dispatch({ type: "setLoad" });
-    dispatch({ type: "setLocation", payload: data_s.data.location });
+    if (data_s.status === 200){
 
-    //Get the precipitation amount in the last hour
-    dispatch({ type: "setPrecipitation", payload: data_s.data.pre });
+      dispatch({
+        type: FetchData,
+        payload: {
+          weather: data_s.data.cur,
+          location: data_s.data.location,
+          precipitation: data_s.data.pre,
+        },
+      });
+    }else {
+      dispatch({
+        type: Error
+      });
+    }
   }
 
   return (
@@ -76,7 +104,9 @@ const Weather = (props) => {
           <b>המלצת היום</b>
           <br />
           {wearType}
-          <div dir="rtl">({state.precipitation} מ"מ)</div>
+
+          {/* Next line show precipitation */}
+          {/* <div dir="rtl">({state.precipitation} מ"מ)</div> */}
         </div>
       )}
     </div>
